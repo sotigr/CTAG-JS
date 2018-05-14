@@ -5,8 +5,6 @@ var CTAG;
     var CtagBase = /** @class */ (function () {
         function CtagBase() { 
             /* constructor */
-            this.body = undefined;
-            this.existingElementTarget = this.body;
         }
         
         CtagBase.prototype.register = function (template) { 
@@ -190,8 +188,15 @@ var CTAG;
                 var instance = new tagClass();
                 instance.tagName = (bindType=="tag")? event.target.tagName.toLowerCase() : undefined;
                 instance.cssClassName = (bindType=="class")? "." + event.target.classList[0].toLowerCase() : undefined; 
+                var tempHtml = event.target.innerHTML;
+                event.target.innerHTML = "";
                 instance.body = event.target;
+                instance.existingElementTarget = null;
                 instance.load();
+                if (instance.existingElementTarget!=null)
+                {
+                    instance.existingElementTarget.innerHTML = tempHtml;
+                }
                 var objId = event.target.getAttribute("id"); 
                 if (objId != null){
                     CtagRegistry.registerId(objId, instance);
