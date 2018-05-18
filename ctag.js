@@ -18,12 +18,12 @@ var CTAG;
             }
         };
 
-        CtagBase.prototype.staticStyles = function (css) { 
-            DomManager.registerStyle(css, (this.tagName!=undefined)?this.tagName:this.cssClassName);
+        CtagBase.prototype.staticStyles = function (css) {  
+            DomManager.registerStyle(css,this.tagName); 
         };
   
         CtagBase.prototype.styles = function (id, css) { 
-            DomManager.registerTargetedStyle(css, (this.tagName!=undefined)?this.tagName:this.cssClassName, id);
+            DomManager.registerTargetedStyle(css, this.tagName, id);
         };
 
         CtagBase.prototype.attr = function(name){
@@ -44,8 +44,7 @@ var CTAG;
     var CtagRegistry = /** @class */ (function () {
         function CtagRegistry(){} 
 
-        CtagRegistry.tagList = []; 
-        CtagRegistry.cssClassList = []; 
+        CtagRegistry.tagList = [];  
         CtagRegistry.styleList = [];
         CtagRegistry.styleTargets = [];
         CtagRegistry.styleVariableList = [];
@@ -61,11 +60,18 @@ var CTAG;
                 DomManager.monitorTag(tagName);
 
                 //Rendering preregistered nodes
-                var tagNodes = document.querySelectorAll(tagName); 
-                for (var i = 0; i < tagNodes.length; i++)
-                { 
-                    DomManager.render({target:tagNodes[i]});
-                }
+                setTimeout(function(){
+                    var tagNodes = document.querySelectorAll(tagName);
+                    for (var i = 0; i < tagNodes.length; i++)
+                    { 
+                        (function(){
+                            var instn = tagNodes[i];
+                            setTimeout(function(){ 
+                                DomManager.render({target:instn});
+                            },0);
+                        }()); 
+                    }  
+                },0);
             }
             else
             {
@@ -73,25 +79,7 @@ var CTAG;
             }  
         };
 
-        CtagRegistry.bindToClass = function (cssClass, className) {
-            if (CtagRegistry.cssClassList[cssClass] == undefined)
-            {
-                CtagRegistry.cssClassList[cssClass] = className; 
-                DomManager.monitorClass(cssClass);
-
-                //Rendering preregistered nodes
-                var cssClassNodes = document.querySelectorAll("." + cssClass);
-                 
-                for (var i = 0; i < cssClassNodes.length; i++)
-                { 
-                    DomManager.render({target:cssClassNodes[i]});
-                }
-            }
-            else
-            {
-                console.error("Ctag: This css class is already bound to a class.");
-            }
-        };
+         
 
         CtagRegistry.registerVariable = function(variableName, variableValue){
             CtagRegistry.styleVariableList[variableName] = variableValue;
@@ -161,33 +149,27 @@ var CTAG;
 
         DomManager.initialize = function () { 
             if (!DomManager.initialized){DomManager.initialized=true;}else{return;}
+
             DomManager.cssHackBaseElement = document.createElement("STYLE");
             DomManager.cssHackBaseElement.setAttribute("type", "text/css");
-            DomManager.cssHackBaseElement.innerHTML = "@keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-moz-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-webkit-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-ms-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-o-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}";
+            DomManager.cssHackBaseElement.innerHTML = ".ctag_display_unset{display:inline;display:initial;}@keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-moz-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-webkit-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-ms-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-o-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}";
             
-            document.addEventListener('animationstart', DomManager.render , true);
-            document.addEventListener('MSAnimationStart', DomManager.render, true);
-            document.addEventListener('webkitAnimationStart', DomManager.render, true);
+            document.addEventListener('animationstart', function(e){ var inst = e; setTimeout(function(){DomManager.render({target:inst.target})}); } , true);
+            document.addEventListener('MSAnimationStart', function(e){ var inst = e; setTimeout(function(){DomManager.render({target:inst.target})}); }, true);
+            document.addEventListener('webkitAnimationStart', function(e){ var inst = e; setTimeout(function(){DomManager.render({target:inst.target})}); }, true);
 
             document.head.appendChild(DomManager.cssHackBaseElement);
  
         };
 
         DomManager.render = function(event){ 
-            var tagClass = undefined;
-            var bindType = undefined;
-            if (CtagRegistry.tagList[event.target.tagName.toLowerCase()]!=undefined){
-                tagClass =  CtagRegistry.tagList[event.target.tagName.toLowerCase()];
-                bindType="tag";
-            }
-            else{
-                tagClass = CtagRegistry.cssClassList[event.target.classList[0].toLowerCase()];
-                bindType="class"
-            }
+            var tagClass = CtagRegistry.tagList[event.target.tagName.toLowerCase()];  
+            
+            event.target.classList.remove("ctag_display_reset");
             if (tagClass != undefined && event.target.getAttribute("ctag-rendered")==null){ 
+                
                 var instance = new tagClass();
-                instance.tagName = (bindType=="tag")? event.target.tagName.toLowerCase() : undefined;
-                instance.cssClassName = (bindType=="class")? "." + event.target.classList[0].toLowerCase() : undefined; 
+                instance.tagName = event.target.tagName.toLowerCase() ; 
                 var tempHtml = event.target.innerHTML;
                 event.target.innerHTML = "";
                 instance.body = event.target;
@@ -213,6 +195,7 @@ var CTAG;
                 }  
 
                 event.target.setAttribute("ctag-rendered", "true");
+                event.target.classList.add("ctag_display_unset");
                 return instance;
             } 
             else
@@ -224,8 +207,8 @@ var CTAG;
         DomManager.renderChildren = function(element){
             var childList = {};
             //Searching for tag matches
-            for(var i = 0; i < CtagRegistry.tagList.length; i ++){
-                var tagList = element.querySelectorAll(CtagRegistry.tagList[i]);
+            for(e in CtagRegistry.tagList){
+                var tagList = element.querySelectorAll(e);
                 for(var tag = 0; tag < tagList.length; tag ++){
                     
                     var instance = DomManager.render({target:tagList[tag]});
@@ -235,18 +218,7 @@ var CTAG;
                     }
                 }
             }
-            
-            //Searching for css-class matches
-            for(var i = 0; i < CtagRegistry.cssClassList.length; i ++){
-                var cssClassList = element.querySelectorAll(CtagRegistry.cssClassList[i]);
-                for(var classIndex = 0; classIndex < cssClassList.length; classIndex ++){
-                    var instance = DomManager.render({target:cssClassList["." + classIndex]});
-                    if (tagList[tag].getAttribute("eid")!=null)
-                    {
-                        childList[tagList[tag].getAttribute("eid")] = instance;
-                    }
-                }
-            }
+             
             return childList;
         };
          
@@ -282,13 +254,9 @@ var CTAG;
         };
 
         DomManager.monitorTag = function(tagName){
-            DomManager.cssHackBaseElement.innerHTML += tagName + "{animation-duration:0.01s;-o-animation-duration:0.01s;-ms-animation-duration:0.01s;-moz-animation-duration:0.01s;-webkit-animation-duration:0.01s;animation-name:nodeInserted;-o-animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted}";
+            DomManager.cssHackBaseElement.innerHTML += tagName + "{display:none;animation-duration:0.01s;-o-animation-duration:0.01s;-ms-animation-duration:0.01s;-moz-animation-duration:0.01s;-webkit-animation-duration:0.01s;animation-name:nodeInserted;-o-animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted}";
         };
         
-        DomManager.monitorClass = function(className){
-            DomManager.cssHackBaseElement.innerHTML += "." + className + "{animation-duration:0.01s;-o-animation-duration:0.01s;-ms-animation-duration:0.01s;-moz-animation-duration:0.01s;-webkit-animation-duration:0.01s;animation-name:nodeInserted;-o-animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted}";
-        };
-
         DomManager.getById = function(id, callback){ 
             return CtagRegistry.identifiedInstances[id];
         };
@@ -304,9 +272,10 @@ var CTAG;
 
 })(CTAG || (CTAG = {})); 
 
-CTAG.DomManager.initialize();  
 
 document.addEventListener("DOMContentLoaded",function(){
+
+    CTAG.DomManager.initialize();  
    
     var ctagSetVariableEvent = document.createEvent("Event");
     ctagSetVariableEvent.initEvent("CtagSetVariables", false, true); 
@@ -318,6 +287,6 @@ document.addEventListener("DOMContentLoaded",function(){
 
     var ctagReadyEvent = document.createEvent("Event");
     ctagReadyEvent.initEvent("CtagReady", false, true);  
-    document.dispatchEvent(ctagReadyEvent);
+    document.dispatchEvent(ctagReadyEvent); 
     
 });

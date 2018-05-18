@@ -211,7 +211,7 @@ Controls.Paper.Button = /** @class */ (function() {
             var cancel_removal = true;
             inst.elements.circle.classList.remove("circle-expand"); 
             inst.elements.circle.style.left = event.clientX-this.offsetLeft + "px";  
-            inst.elements.circle.style.top = event.clientY-this.offsetTop + "px";   
+            inst.elements.circle.style.top = window.pageYOffset + event.clientY-this.offsetTop + "px";   
 
             inst.elements.circle.classList.add("circle-expand");
             
@@ -228,7 +228,7 @@ Controls.Paper.Button = /** @class */ (function() {
         this.elements.wrapper.addEventListener("mouseleave", function(){
             this.classList.remove("wrapper-pressed");  
         });
-
+        this.elements.wrapper.setAttribute("tabindex", "0");
         this.elements.textValue.innerHTML = this.attr("value"); 
     };
   
