@@ -1,3 +1,17 @@
+
+document.addEventListener("CtagSetVariables", function(){
+    CTAG.CtagRegistry.registerVariable("paper_control_background", "#fff");
+    CTAG.CtagRegistry.registerVariable("paper_textbox_default", "#ccc");
+    CTAG.CtagRegistry.registerVariable("paper_textbox_focus", "#4286f4");
+    CTAG.CtagRegistry.registerVariable("paper_textbox_error", "#f44141"); 
+    CTAG.CtagRegistry.registerVariable("paper_font_color", "#777");
+    CTAG.CtagRegistry.registerVariable("paper_button_background_normal", "#4286f4");
+    CTAG.CtagRegistry.registerVariable("paper_button_background_hover", "#4286f4"); 
+    CTAG.CtagRegistry.registerVariable("paper_button_circle", "#173566");
+    CTAG.CtagRegistry.registerVariable("paper_button_font_color_normal", "#efefef");
+    CTAG.CtagRegistry.registerVariable("paper_button_font_color_hover", "#efefef");
+});
+
 var Controls = {};
 var Paper = {};
 Controls.Paper = Paper;
@@ -282,18 +296,7 @@ Controls.Paper.Button = /** @class */ (function() {
     return Button;
 }()); 
 
-document.addEventListener("CtagSetVariables", function(){
-    CTAG.CtagRegistry.registerVariable("paper_control_background", "#fff");
-    CTAG.CtagRegistry.registerVariable("paper_textbox_default", "#ccc");
-    CTAG.CtagRegistry.registerVariable("paper_textbox_focus", "#4286f4");
-    CTAG.CtagRegistry.registerVariable("paper_textbox_error", "#f44141"); 
-    CTAG.CtagRegistry.registerVariable("paper_font_color", "#777");
-    CTAG.CtagRegistry.registerVariable("paper_button_background_normal", "#4286f4");
-    CTAG.CtagRegistry.registerVariable("paper_button_background_hover", "#4286f4"); 
-    CTAG.CtagRegistry.registerVariable("paper_button_circle", "#173566");
-    CTAG.CtagRegistry.registerVariable("paper_button_font_color_normal", "#efefef");
-    CTAG.CtagRegistry.registerVariable("paper_button_font_color_hover", "#efefef");
-});
+
 
 document.addEventListener("CtagBind", function(){   
     CTAG.CtagRegistry.bindToTag("paper-textbox", Controls.Paper.TextBox); 

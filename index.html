@@ -3,15 +3,17 @@
     <head>
         <meta charset="UTF-8"> 
         <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-        <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimun-scale=1.0">
+        <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
 
-        <script type="text/javascript" src="ctag.js"></script>  
-        <script type="text/javascript" src="tag.utility.js"></script> 
-        <script type="text/javascript" src="paper.controls.js"></script> 
+        <link rel="stylesheet" type="text/css" href="/app1/styles/shared.css">
+        <script type="text/javascript" src="/app1/scripts/ctag.min.js"></script>  
+        <script type="text/javascript" src="/app1/scripts/tag.utility.js"></script> 
+        <script type="text/javascript" src="/app1/scripts/paper.controls.js"></script> 
+
+        
+    </head>
+    <body> 
         <style>
-            body{
-                font-family: Arial, Helvetica, sans-serif;
-            }
             .test{
                 width:200px;
             }
@@ -22,23 +24,29 @@
             .mybutton{
                 width:150px;
                 height:30px;
-                padding-top:20px;
+                margin-top:20px; 
+                margin-bottom: 10px;
+                display: inline-block; 
+            }
+            .button2{
+                display: inline-block; 
             }
         </style>
-    </head>
-    <body>
         <div class="middle">
-
-            <paper-textbox id="mytextbox" class="test" placeholder="Username"></paper-textbox> 
-            <paper-textbox class="test" placeholder="Name"></paper-textbox>  
-            <paper-textbox class="test" placeholder="Email"></paper-textbox>  
+            <paper-textbox id="mytextbox" class="test" placeholder="Username"></paper-textbox>
+            <paper-textbox class="test" placeholder="Name"></paper-textbox>
+            <paper-textbox class="test" placeholder="Name"></paper-textbox>
             <paper-button class="mybutton" value="hello"></paper-button>
+            <paper-button id="mybtn" class="button2" size="auto" value="hel"></paper-button>
         </div>
-        <script type="text/javascript">  
-            document.addEventListener("CtagReady",function(){
-                
-                CTAG.DomManager.getById("mytextbox").value("Sampppple text");
-                
+        <script type="text/javascript">   
+            CTAG.DomManager.setLoadNotify("mytextbox", function(e){ 
+                e.value("Sampppple text");
+            });
+            CTAG.DomManager.setLoadNotify("mybtn", function(e){ 
+                e.body.addEventListener("click", function(){
+                    alert(CTAG.DomManager.getById("mytextbox").value());
+                });
             }); 
         </script>
 
