@@ -1,54 +1,72 @@
-<!DOCTYPE html>
 <html>
     <head>
-        <meta charset="UTF-8"> 
-        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
-        <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta charset="utf-8" />
+        <script src="promise-polyfill.min.js"></script>
+        <script src="html-template-transpiler.js"></script>
+        <script src="ctag.js"></script>
 
-        <link rel="stylesheet" type="text/css" href="/app1/styles/shared.css">
-        <script type="text/javascript" src="/app1/scripts/ctag.min.js"></script>  
-        <script type="text/javascript" src="/app1/scripts/tag.utility.js"></script> 
-        <script type="text/javascript" src="/app1/scripts/paper.controls.js"></script> 
+        <script>
 
+            
+            "use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var mytag = function (_CTAG$CtagBase) {
+    _inherits(mytag, _CTAG$CtagBase);
+
+    function mytag() {
+        _classCallCheck(this, mytag);
+
+        return _possibleConstructorReturn(this, (mytag.__proto__ || Object.getPrototypeOf(mytag)).apply(this, arguments));
+    }
+
+    _createClass(mytag, [{
+        key: "load",
+        value: function load() {
+            this.elements.hello.textContent = "TOTOTO";
+            this.existingElementTarget = this.elements.targettest;
+            //this.elements.targettest.style.color = "red";
+            this.setStyles("hello", "\n                        this.test{\n                            color:#fff;\n                        }\n                    ");
+        }
+    }], [{
+        key: "template",
+        get: function get() {
+            return (/*html*/"\n                        <div class=\"test\" eid=\"hello\"></div>\n                        <div eid=\"targettest\"></div>                    \n                    "
+            );
+        }
+    }, {
+        key: "styles",
+        get: function get() {
+            return "\n                        this.test{\n                            background-color:#aaa;\n                        }       \n                    ";
+        }
+    }]);
+
+    return mytag;
+}(CTAG.CtagBase);
+
+document.addEventListener("CtagBind", function () {
+    CTAG.CtagRegistry.bindToTag("mytag", mytag);
+});
+        </script>
         
     </head>
-    <body> 
-        <style>
-            .test{
-                width:200px;
-            }
-            .middle{
-                width:300px;
-                margin:0 auto;
-            }
-            .mybutton{
-                width:150px;
-                height:30px;
-                margin-top:20px; 
-                margin-bottom: 10px;
-                display: inline-block; 
-            }
-            .button2{
-                display: inline-block; 
-            }
-        </style>
-        <div class="middle">
-            <paper-textbox id="mytextbox" class="test" placeholder="Username"></paper-textbox>
-            <paper-textbox class="test" placeholder="Name"></paper-textbox>
-            <paper-textbox class="test" placeholder="Name"></paper-textbox>
-            <paper-button class="mybutton" value="hello"></paper-button>
-            <paper-button id="mybtn" class="button2" size="auto" value="hel"></paper-button>
-        </div>
-        <script type="text/javascript">   
-            CTAG.DomManager.setLoadNotify("mytextbox", function(e){ 
-                e.value("Sampppple text");
-            });
-            CTAG.DomManager.setLoadNotify("mybtn", function(e){ 
-                e.body.addEventListener("click", function(){
-                    alert(CTAG.DomManager.getById("mytextbox").value());
-                });
-            }); 
-        </script>
-
+    <body>
+        <mytag><p>loo</p></mytag>  
+        <mytag><p>loo</p></mytag>  
+        <mytag><p>loo</p></mytag>  
+        <mytag><p>loo</p></mytag>  
+        <mytag><p>loo</p></mytag>  
+        <mytag><p>loo</p></mytag>  
+        <mytag><p>loo</p></mytag>  
+        <mytag><p>loo</p></mytag>  
+        <mytag><p>loo</p></mytag>  
     </body>
 </html>
