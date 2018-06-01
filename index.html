@@ -7,66 +7,50 @@
         <script src="ctag.js"></script>
 
         <script>
-
+            document.addEventListener("CtagSetVariables", function(){
+                CTAG.CtagRegistry.registerVariable("my_font_size", "25px"); 
+            });
             
-            "use strict";
+            class mytag extends CTAG.CtagBase{
+                static get template(){
+                    return `
+                        <div eid="mydiv" class="mydivclass">hello</div>
+                    `;
+                }
+                static get styles(){
+                    return `
+                        this.mydivclass{
+                            color:#f00;
+                            font-size:~{my_font_size};
+                        }
+                    `;
+                }
+                load(){
+                    this.elements.mydiv.textContent = "bye";
+                }
+            } 
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var mytag = function (_CTAG$CtagBase) {
-    _inherits(mytag, _CTAG$CtagBase);
-
-    function mytag() {
-        _classCallCheck(this, mytag);
-
-        return _possibleConstructorReturn(this, (mytag.__proto__ || Object.getPrototypeOf(mytag)).apply(this, arguments));
-    }
-
-    _createClass(mytag, [{
-        key: "load",
-        value: function load() {
-            this.elements.hello.textContent = "TOTOTO";
-            this.existingElementTarget = this.elements.targettest;
-            //this.elements.targettest.style.color = "red";
-            this.setStyles("hello", "\n                        this.test{\n                            color:#fff;\n                        }\n                    ");
-        }
-    }], [{
-        key: "template",
-        get: function get() {
-            return (/*html*/"\n                        <div class=\"test\" eid=\"hello\"></div>\n                        <div eid=\"targettest\"></div>                    \n                    "
-            );
-        }
-    }, {
-        key: "styles",
-        get: function get() {
-            return "\n                        this.test{\n                            background-color:#aaa;\n                        }       \n                    ";
-        }
-    }]);
-
-    return mytag;
-}(CTAG.CtagBase);
-
-document.addEventListener("CtagBind", function () {
-    CTAG.CtagRegistry.bindToTag("mytag", mytag);
-});
+            document.addEventListener("CtagBind", function () {
+                CTAG.CtagRegistry.bindToTag("mytag", mytag);
+            });
         </script>
         
     </head>
     <body>
-        <mytag><p>loo</p></mytag>  
-        <mytag><p>loo</p></mytag>  
-        <mytag><p>loo</p></mytag>  
-        <mytag><p>loo</p></mytag>  
-        <mytag><p>loo</p></mytag>  
-        <mytag><p>loo</p></mytag>  
-        <mytag><p>loo</p></mytag>  
-        <mytag><p>loo</p></mytag>  
-        <mytag><p>loo</p></mytag>  
+        <mytag><p>loo</p></mytag>
+        <mytag><p>loo</p></mytag>
+        <mytag><p>loo</p></mytag>
+        <mytag><p>loo</p></mytag>
+        <mytag><p>loo</p></mytag>
+        <mytag><p>loo</p></mytag>
+        <mytag><p>loo</p></mytag>
+        <mytag><p>loo</p></mytag>
+        <mytag id="atag"><p>loo</p></mytag>
+        <script>
+            CTAG.DomManager.ctagLoaded("atag").then(function(sender){
+                sender.elements.mydiv.style.color = "#0f0";
+                sender.elements.mydiv.textContent = "hello2";
+            });
+        </script>
     </body>
 </html>

@@ -204,7 +204,7 @@ var CTAG;
                             if (objId != null){
                                 CtagRegistry.registerId(objId, instance);
                                 if (CtagRegistry.identifiedNotifiers[objId]!=undefined)
-                                { 
+                                {  
                                     CtagRegistry.identifiedNotifiers[objId](instance);
                                 }
                             } 
@@ -285,8 +285,10 @@ var CTAG;
             return CtagRegistry.identifiedInstances[id];
         };
 
-        DomManager.setLoadNotify = function(id, callback){
-            CtagRegistry.identifiedNotifiers[id] = callback; 
+        DomManager.ctagLoaded = function(id){
+            return new Promise(function(success, fail){
+                CtagRegistry.identifiedNotifiers[id] = success; 
+            });
         };
 
         return DomManager;
