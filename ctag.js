@@ -139,7 +139,7 @@ var CTAG;
 
             DomManager.cssHackBaseElement = document.createElement("STYLE");
             DomManager.cssHackBaseElement.setAttribute("type", "text/css");
-            DomManager.cssHackBaseElement.textContent = ".ctag_display_unset{display:inline;display:initial;}@keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-moz-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-webkit-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-ms-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-o-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}";
+            DomManager.cssHackBaseElement.textContent = "@keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-moz-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-webkit-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-ms-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-o-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}";
             
             document.addEventListener('animationstart', function(e){ var inst = e; DomManager.render({target:inst.target},Settings.asyncCssHackRendering)}  , true);
             document.addEventListener('MSAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},Settings.asyncCssHackRendering)} , true);
@@ -217,8 +217,6 @@ var CTAG;
                             }  
 
                             event.target.setAttribute("ctag-rendered", "true");
-                            event.target.classList.add("ctag_display_unset");
-                            event.target.classList.remove("ctag_display_reset");
                             success(instance); 
                         });  
                     });  
@@ -279,7 +277,7 @@ var CTAG;
         };
 
         DomManager.monitorTag = function(tagName){
-            DomManager.cssHackBaseElement.textContent += tagName + "{display:none;animation-duration:0.01s;-o-animation-duration:0.01s;-ms-animation-duration:0.01s;-moz-animation-duration:0.01s;-webkit-animation-duration:0.01s;animation-name:nodeInserted;-o-animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted}";
+            DomManager.cssHackBaseElement.textContent += tagName + "{animation-duration:0.01s;-o-animation-duration:0.01s;-ms-animation-duration:0.01s;-moz-animation-duration:0.01s;-webkit-animation-duration:0.01s;animation-name:nodeInserted;-o-animation-name:nodeInserted;-ms-animation-name:nodeInserted;-moz-animation-name:nodeInserted;-webkit-animation-name:nodeInserted}";
         };
         
         DomManager.getById = function(id, callback){ 
