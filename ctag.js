@@ -155,13 +155,13 @@ var CTAG;
                 var tagClass = CtagRegistry.tagList[event.target.tagName.toLowerCase()];  
                                
                 if (tagClass != undefined && event.target.getAttribute("ctag-rendered")==null){ 
-                    
+                   
+                        
                     var instance = new tagClass();
                     instance.tagName = event.target.tagName.toLowerCase() ; 
                     var tempHtml = event.target.innerHTML;  
                     event.target.textContent = "";
-                    instance.body = event.target;
-                    instance.existingElementTarget = null; 
+                    instance.body = event.target; 
                     instance.children = {};
                     
                     if (!tagClass.registered)
@@ -196,6 +196,7 @@ var CTAG;
                                 }
                             }
                             instance.load();
+                            console.log(instance.existingElementTarget);
                             if (instance.existingElementTarget!=null)
                             {
                                 instance.existingElementTarget.innerHTML = tempHtml;
@@ -220,7 +221,7 @@ var CTAG;
                             event.target.classList.remove("ctag_display_reset");
                             success(instance); 
                         });  
-                    }); 
+                    });  
                 } 
                 else
                 {
