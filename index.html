@@ -15,7 +15,11 @@
                 static get template(){
                     return `
                         <div eid="mydiv" class="mydivclass">hello</div>
+                        <div eid="cont"></div>
                     `;
+                }
+                get existingElementTarget(){
+                    return this.elements.cont;
                 }
                 static get styles(){
                     return `
