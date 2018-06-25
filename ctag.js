@@ -127,18 +127,20 @@ var CTAG;
         DomManager.initialized = false;
 
         DomManager.initialize = function () { 
-            if (!DomManager.initialized){DomManager.initialized=true;}else{return;}
-
+  
             DomManager.cssHackBaseElement = document.createElement("STYLE");
             DomManager.cssHackBaseElement.setAttribute("type", "text/css");
             DomManager.cssHackBaseElement.textContent = "@keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-moz-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-webkit-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-ms-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-o-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}";
-            
-            document.addEventListener('animationstart', function(e){ var inst = e; DomManager.render({target:inst.target},Settings.asyncCssHackRendering)}  , true);
-            document.addEventListener('MSAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},Settings.asyncCssHackRendering)} , true);
-            document.addEventListener('webkitAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},Settings.asyncCssHackRendering)} , true);
-
+            if (!(navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) || navigator.userAgent.match(/rv:11/)) || (typeof $.browser !== "undefined" && $.browser.msie == 1)))
+            {
+                document.addEventListener('animationstart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)}  , true);
+                document.addEventListener('MSAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
+                document.addEventListener('webkitAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
+            }
+               
+     
             document.head.appendChild(DomManager.cssHackBaseElement);
- 
+       
         };
 
         DomManager.render = function(event, async){ 
@@ -332,7 +334,13 @@ document.addEventListener("DOMContentLoaded",function(){
         }  
     }
 
- 
+    if (navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) || navigator.userAgent.match(/rv:11/)) || (typeof $.browser !== "undefined" && $.browser.msie == 1))
+    {
+        document.addEventListener('animationstart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)}  , true);
+        document.addEventListener('MSAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
+        document.addEventListener('webkitAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
+    }
+
     var ctagReadyEvent = document.createEvent("Event");
     ctagReadyEvent.initEvent("CtagReady", false, true);  
     document.dispatchEvent(ctagReadyEvent); 
