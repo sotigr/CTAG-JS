@@ -29,7 +29,32 @@ var CTAG;
                 return attr;
             }
         };
-
+        CtagBase.prototype.addChild=function(template, host){
+            var _this = this;
+            return new Promise(function(success){ 
+                var chlid_temp = document.createElement("DIV");
+                chlid_temp.innerHTML = template;
+                var unrendered = chlid_temp.children[0];
+                host.appendChild(unrendered);
+                CTAG.DomManager.render({target:unrendered}, false).then(function(instance){
+                    if (unrendered.getAttribute("eid")!=null)
+                        _this.children[unrendered.getAttribute("eid")] = instance;
+                    success();
+                }); 
+            });
+        }
+        CtagBase.prototype.addElement=function(template, host){
+            var _this = this;
+            return new Promise(function(success){ 
+                var chlid_temp = document.createElement("DIV");
+                chlid_temp.innerHTML = template;
+                var element = chlid_temp.children[0];
+                if (element.getAttribute("eid")!=null)
+                    _this.elements[element.getAttribute("eid")] = element;
+                host.appendChild(element);
+                success();
+            });
+        }
         return CtagBase;
     }());
     CTAG.CtagBase = CtagBase;
@@ -141,8 +166,9 @@ var CTAG;
      
             document.head.appendChild(DomManager.cssHackBaseElement);
        
-        };
+        }; 
 
+        
         DomManager.render = function(event, async){ 
             return new Promise(function(success, fali){ 
                                   
@@ -174,22 +200,29 @@ var CTAG;
                         
                         //rendering chlildren
                         var promiseList = [];
-
+                        var childEids = [];
+                        var eidcn = 0;
                         //Searching for tag matches
                         var childTags = Object.keys(CtagRegistry.tagList);
                         
                         for(var i = 0; i< childTags.length; i++){
                             var tagList = instance.body.querySelectorAll(childTags[i]);
                             for(var tag = 0; tag < tagList.length; tag ++){  
+                                childEids.push(tagList[tag].querySelectorAll("[eid]"));
                                 promiseList.push(DomManager.render({target:tagList[tag]}, CTAG.Settings.asyncChildRendering)); 
                             }
                         }
                         Promise.all(promiseList).then(function(chlidObjects){ 
                             var elem = instance.existingElementTarget;
+                            
                             if (elem!=undefined)
                             {
                                 elem.innerHTML = tempHtml;
-                            
+                                var neweids = elem.querySelectorAll("[eid]");
+                                for (var i = 0; i<neweids.length; i++)
+                                {
+                                    instance.elements[neweids[i].getAttribute("eid")] = neweids[i];
+                                }
                                 var objkeys = Object.keys(CtagRegistry.tagList);
                                 for (var i=0;i<objkeys.length; i++)
                                 { 
@@ -200,14 +233,20 @@ var CTAG;
                                     }                                    
                                 }
                             }
-
-
+                            
+                            
                             for (var i = 0; i<chlidObjects.length; i++)
                             { 
                                 if (chlidObjects[i].body.getAttribute("eid")!=null)
                                 { 
                                     instance.children[chlidObjects[i].body.getAttribute("eid")] = chlidObjects[i];
                                 }
+                                var myeids = childEids[eidcn];
+                                for (var j = 0; j< myeids.length; j++)
+                                { 
+                                    instance.elements[myeids[j].getAttribute("eid")] = chlidObjects[i].elements[myeids[j].getAttribute("eid")];
+                                }
+                                eidcn++;
                             }
                          
                             instance.load(); 
@@ -333,13 +372,7 @@ document.addEventListener("DOMContentLoaded",function(){
             CTAG.DomManager.render({target:instn}, CTAG.Settings.asyncRegistration);
         }  
     }
-
-    if (navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) || navigator.userAgent.match(/rv:11/)) || (typeof $.browser !== "undefined" && $.browser.msie == 1))
-    {
-        document.addEventListener('animationstart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)}  , true);
-        document.addEventListener('MSAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
-        document.addEventListener('webkitAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
-    }
+ 
 
     var ctagReadyEvent = document.createEvent("Event");
     ctagReadyEvent.initEvent("CtagReady", false, true);  
