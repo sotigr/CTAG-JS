@@ -158,28 +158,27 @@ var CTAG;
             DomManager.cssHackBaseElement.textContent = "@keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-moz-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-webkit-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-ms-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}@-o-keyframes nodeInserted{from{outline-color:#fff}to{outline-color:#000}}";
             if (!(navigator.appName == 'Microsoft Internet Explorer' || !!(navigator.userAgent.match(/Trident/) || navigator.userAgent.match(/rv:11/)) ))
             {
-                document.addEventListener('animationstart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)}  , true);
-                document.addEventListener('MSAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
-                document.addEventListener('webkitAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
+                //document.addEventListener('animationstart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)}  , true);
+                //document.addEventListener('MSAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
+                //document.addEventListener('webkitAnimationStart', function(e){ var inst = e; DomManager.render({target:inst.target},CTAG.Settings.asyncCssHackRendering)} , true);
             }
                
      
-            document.head.appendChild(DomManager.cssHackBaseElement);
+            //document.head.appendChild(DomManager.cssHackBaseElement);
        
         }; 
 
         
         DomManager.render = function(event, async){ 
-            return new Promise(function(success, fali){ 
+            return new Promise(function(success, fail){ 
                                   
                 var tagClass = CtagRegistry.tagList[event.target.tagName.toLowerCase()];  
                                
                 if (tagClass != undefined && event.target.getAttribute("ctag-rendered")==null){ 
-                   
-                   
+                    event.target.setAttribute("ctag-rendered", "true");
                     var instance = new tagClass();
                     instance.tagName = event.target.tagName.toLowerCase() ; 
-                    var tempHtml = event.target.innerHTML;  
+                    var tempHtml = event.target.innerHTML;   
                     event.target.textContent = "";
                     instance.body = event.target; 
                     instance.children = {};
@@ -237,16 +236,18 @@ var CTAG;
                             
                             for (var i = 0; i<chlidObjects.length; i++)
                             { 
-                                if (chlidObjects[i].body.getAttribute("eid")!=null)
-                                { 
-                                    instance.children[chlidObjects[i].body.getAttribute("eid")] = chlidObjects[i];
+                                if (chlidObjects[i]!=null){
+                                    if (chlidObjects[i].body.getAttribute("eid")!=null)
+                                    { 
+                                        instance.children[chlidObjects[i].body.getAttribute("eid")] = chlidObjects[i];
+                                    }
+                                    var myeids = childEids[eidcn];
+                                    for (var j = 0; j< myeids.length; j++)
+                                    { 
+                                        instance.elements[myeids[j].getAttribute("eid")] = chlidObjects[i].elements[myeids[j].getAttribute("eid")];
+                                    }
+                                    eidcn++;
                                 }
-                                var myeids = childEids[eidcn];
-                                for (var j = 0; j< myeids.length; j++)
-                                { 
-                                    instance.elements[myeids[j].getAttribute("eid")] = chlidObjects[i].elements[myeids[j].getAttribute("eid")];
-                                }
-                                eidcn++;
                             }
                          
                             instance.load(); 
@@ -263,10 +264,12 @@ var CTAG;
                             //Transfers attributes because (Attribute on custom tags are normaly discarded).
                             for(var i = 0; i < event.target.attributes.length; i++)
                             { 
-                                event.target.children[0].setAttribute(event.target.attributes[i].name, event.target.attributes[i].value);
+                                if (event.target.children[0]!=undefined){
+                                    event.target.children[0].setAttribute(event.target.attributes[i].name, event.target.attributes[i].value);
+                                }
                             }  
 
-                            event.target.setAttribute("ctag-rendered", "true");
+                            
                             success(instance); 
                         });  
                     });  
