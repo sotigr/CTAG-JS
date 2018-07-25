@@ -140,9 +140,7 @@ var CTAG;
         DomManager.render = function (event, async) {
             return new Promise(function (success, fail) {
                 
-                var rawElement = event.target;
-                var tempDisplay = rawElement.style.display;
-                rawElement.style.display = "none";
+                var rawElement = event.target; 
                 var tagClass = CtagRegistry.tagList[rawElement.tagName.toLowerCase()];
                 if (rawElement.getAttribute("ctag-iid") != null) {
                     success(CtagRegistry.Instances[parseInt(rawElement.getAttribute("ctag-iid"))]);
@@ -156,8 +154,7 @@ var CTAG;
                     var instance = new tagClass();
                     CtagRegistry.Instances[myiid] = instance;
                     instance.tagName = rawElement.tagName.toLowerCase();
-                    var tempHtml = rawElement.innerHTML;
-                    rawElement.textContent = "";
+   
                     instance.body = rawElement;
                     instance.children = {};
 
@@ -191,8 +188,12 @@ var CTAG;
                             var elem = instance.existingElementTarget;
                             instance.children = chlidObjects;
 
-                            if (elem != undefined) {
-                                elem.innerHTML = tempHtml;
+                            if (elem != undefined) { 
+                                for (var l = 0; l< rawElement.children.length; l++){ 
+                                    try{
+                                        elem.appendChild(rawElement.children[l], elem.children[0]);
+                                    }catch(err){}
+                                }
                                 var neweids = elem.querySelectorAll("[eid]");
                                 for (var i = 0; i < neweids.length; i++) {
                                     instance.elements[neweids[i].getAttribute("eid")] = neweids[i];
@@ -204,7 +205,7 @@ var CTAG;
                                         chlidObjects.concat(DomManager.render({ target: qr[j] }, false));
                                     }
                                 }
-                            }
+                            } 
 
                             var promList = [];
                             for (var i = 0; i < chlidObjects.length; i++) {
@@ -231,17 +232,19 @@ var CTAG;
                                     succ();
                                 }));
                             }
-                            Promise.all(promList).then(function () {
-                                instance.load();
-
+                            // if (instance.existingElementTarget!=undefined)
+                            //     DomManager.renderChildren(instance.existingElementTarget);
+                            Promise.all(promList).then(function () { 
+                          
+                                instance.load();    
+                                 
                                 var objId = rawElement.getAttribute("id");
                                 if (objId != null) {
                                     CtagRegistry.registerId(objId, instance);
                                     if (CtagRegistry.identifiedNotifiers[objId] != undefined) {
                                         CtagRegistry.identifiedNotifiers[objId](instance);
                                     }
-                                }
-                                rawElement.style.display = tempDisplay;
+                                } 
                                 //Transfers attributes because (Attribute on custom tags are normaly discarded).
                                 for (var i = 0; i < rawElement.attributes.length; i++) {
                                     if (rawElement.children[0] != undefined) {
@@ -257,6 +260,25 @@ var CTAG;
                     success(null);
                 }
 
+            });
+        };
+
+        DomManager.renderChildren = function(element){
+            return new Promise(function(success){
+                var keys = Object.keys(CTAG.CtagRegistry.tagList);
+                var tagNodes = [];
+                var promises = [];
+                for (var i = 0; i < keys.length; i++) {
+                    var nodes = element.querySelectorAll(keys[i]);
+                    for (var k = 0; k < nodes.length; k++) {
+                        tagNodes.push(nodes[k]);
+                    }
+                }
+                for (var j = 0; j < tagNodes.length; j++) {
+                    var instn = tagNodes[j]; 
+                    promises.push(CTAG.DomManager.render({ target: instn }, CTAG.Settings.asyncRegistration));
+                }
+                success(promises);
             });
         };
 
@@ -328,18 +350,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ctagBindEvent.initEvent("CtagBind", true, true);
     document.dispatchEvent(ctagBindEvent);
 
-    var keys = Object.keys(CTAG.CtagRegistry.tagList);
-    var tagNodes = [];
-    for (var i = 0; i < keys.length; i++) {
-        var nodes = document.querySelectorAll(keys[i]);
-        for (var k = 0; k < nodes.length; k++) {
-            tagNodes.push(nodes[k]);
-        }
-    }
-    for (var j = 0; j < tagNodes.length; j++) {
-        var instn = tagNodes[j]; 
-        CTAG.DomManager.render({ target: instn }, CTAG.Settings.asyncRegistration);
-    }
+    CTAG.DomManager.renderChildren(document);
 
     var ctagReadyEvent = document.createEvent("Event");
     ctagReadyEvent.initEvent("CtagReady", false, true);
