@@ -36,7 +36,7 @@ var CTAG;
                 host.appendChild(unrendered);
                 CTAG.DomManager.render({ target: unrendered }, false).then(function (instance) {
                     if (unrendered.getAttribute("eid") != null) _this.children[unrendered.getAttribute("eid")] = instance;
-                    success();
+                    success(instance);
                 });
             });
         };
@@ -48,7 +48,7 @@ var CTAG;
                 var element = chlid_temp.children[0];
                 if (element.getAttribute("eid") != null) _this.elements[element.getAttribute("eid")] = element;
                 host.appendChild(element);
-                success();
+                success(element);
             });
         };
         return CtagBase;
