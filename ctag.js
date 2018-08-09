@@ -40,6 +40,24 @@ var CTAG;
                 });
             });
         };
+
+        CtagBase.prototype.addChildren = function(template, host){
+            var _this = this;
+            return new Promise(function(resolve){
+                var child_temp = document.createElement("DIV");
+               
+                child_temp.innerHTML = template;
+                host.appendChild(child_temp);
+                DomManager.renderChildren(child_temp).then(function(instances){ 
+                    for (var i = 0; i < instances.length; i++ )
+                    {
+                        if (instances[i].body.getAttribute("eid") != null) _this.children[instances[i].body.getAttribute("eid")] = instances[i];
+                    }
+                    resolve(instances, child_temp);
+                });
+            });
+        };
+
         CtagBase.prototype.addElement = function (template, host) {
             var _this = this;
             return new Promise(function (success) {
@@ -278,7 +296,9 @@ var CTAG;
                     var instn = tagNodes[j]; 
                     promises.push(CTAG.DomManager.render({ target: instn }, CTAG.Settings.asyncRegistration));
                 }
-                success(promises);
+                Promise.all(promises).then(function(instances){ 
+                    success(instances);
+                });
             });
         };
 
