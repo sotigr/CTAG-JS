@@ -165,6 +165,7 @@ var CTAG;
                     return;
                 }
                 if (tagClass != undefined && rawElement.getAttribute("ctag-rendered") == null) {
+
                     rawElement.setAttribute("ctag-rendered", "true");
                     CtagRegistry.InstanceIndex += 1;
                     var myiid = CtagRegistry.InstanceIndex;
@@ -177,27 +178,35 @@ var CTAG;
                     instance.children = {};
 
                     if (!tagClass.registered) {
+
                         tagClass.registered = true;
                         var parser = new TemplateTranspiler.Parser();
                         parser.GenerateDrawerFuction(rawElement.tagName, tagClass.template);
+
                     }
                     if (!tagClass.stylesRegistered) {
+
                         tagClass.stylesRegistered = true;
                         DomManager.registerStyle(tagClass.styles, rawElement.tagName);
+
                     }
                     TemplateTranspiler.Functions[rawElement.tagName](instance.body, async).then(function (objects) {
                         instance.elements = objects;
-
+                
                         //rendering chlildren
                         var promiseList = [];
                         //Searching for tag matches
                         var childTags = Object.keys(CtagRegistry.tagList);
 
                         for (var i = 0; i < childTags.length; i++) {
+
                             var tagList = instance.body.querySelectorAll(childTags[i]);
                             for (var tag = 0; tag < tagList.length; tag++) {
+
                                 promiseList.push(DomManager.render({ target: tagList[tag] }, CTAG.Settings.asyncChildRendering));
+
                             }
+
                         }
 
                         Promise.all(promiseList).then(function (chlidObjects) {
@@ -207,22 +216,32 @@ var CTAG;
                             instance.children = chlidObjects;
 
                             if (elem != undefined) { 
+
                                 for (var l = 0; l< rawElement.children.length; l++){ 
+
                                     try{
                                         elem.appendChild(rawElement.children[l], elem.children[0]);
                                     }catch(err){}
+
                                 }
-                                var neweids = elem.querySelectorAll("[eid]");
-                                for (var i = 0; i < neweids.length; i++) {
-                                    instance.elements[neweids[i].getAttribute("eid")] = neweids[i];
-                                }
-                                var objkeys = Object.keys(CtagRegistry.tagList);
-                                for (var i = 0; i < objkeys.length; i++) {
-                                    var qr = elem.querySelectorAll(objkeys[i]);
-                                    for (var j = 0; j < qr.length; j++) {
-                                        chlidObjects.concat(DomManager.render({ target: qr[j] }, false));
-                                    }
-                                }
+
+                                // var neweids = elem.querySelectorAll("[eid]");
+                                // for (var i = 0; i < neweids.length; i++) {
+
+                                //     if (instance.elements[neweids[i].getAttribute("eid")] == undefined)
+                                //         instance.elements[neweids[i].getAttribute("eid")] = neweids[i];
+
+                                // }
+
+                                // var objkeys = Object.keys(CtagRegistry.tagList);
+                                // for (var i = 0; i < objkeys.length; i++) {
+                                //     var qr = elem.querySelectorAll(objkeys[i]);
+                                //     for (var j = 0; j < qr.length; j++) {
+
+                                //         DomManager.render({ target: qr[j] });
+
+                                //     }
+                                // }
                             } 
 
                             var promList = [];
@@ -234,18 +253,18 @@ var CTAG;
                                             instance.children[obj.body.getAttribute("eid")] = obj;
                                         }
 
-                                        if (Object.keys(obj.children).length > 0 || Object.keys(obj.elements).length > 0) {
-                                            for (var j = 0; j < rawEids.length; j++) {
-                                                var ceid = rawEids[j].getAttribute("eid");
+                                        // if (Object.keys(obj.children).length > 0 || Object.keys(obj.elements).length > 0) {
+                                        //     for (var j = 0; j < rawEids.length; j++) {
+                                        //         var ceid = rawEids[j].getAttribute("eid");
 
-                                                if (obj.children[ceid] != undefined) {
-                                                    instance.children[ceid] = obj.children[ceid];
-                                                }
-                                                if (obj.elements[ceid] != undefined) {
-                                                    instance.elements[ceid] = obj.elements[ceid];
-                                                }
-                                            }
-                                        }
+                                        //         if (obj.children[ceid] != undefined) {
+                                        //             instance.children[ceid] = obj.children[ceid];
+                                        //         }
+                                        //         if (obj.elements[ceid] != undefined) {
+                                        //             instance.elements[ceid] = obj.elements[ceid];
+                                        //         }
+                                        //     }
+                                        // }
                                     }
                                     succ();
                                 }));
@@ -263,11 +282,16 @@ var CTAG;
                                         CtagRegistry.identifiedNotifiers[objId](instance);
                                     }
                                 } 
+                                
                                 //Transfers attributes because (Attribute on custom tags are normaly discarded).
                                 for (var i = 0; i < rawElement.attributes.length; i++) {
+
                                     if (rawElement.children[0] != undefined) {
+
                                         rawElement.children[0].setAttribute(rawElement.attributes[i].name, rawElement.attributes[i].value);
+
                                     }
+
                                 } 
                                 
                                 success(instance);

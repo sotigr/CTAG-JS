@@ -42,6 +42,8 @@ TemplateTranspiler.Parser = (function(){
         //Initializing a viriable for the generated code
         var final = "";
         
+        if (node.nodeName == "#comment")
+            return final; 
      
         if (node.nodeName == "#text"){
             if (node.data.replace(/[\r\n]+/g,' ').trim() == "")
@@ -51,9 +53,9 @@ TemplateTranspiler.Parser = (function(){
             final +=  parentName + ".appendChild("+current_name+");";  
             return final;
         }
-        //Creates the element
+        //Creates the element 
         final += "var " + current_name + " = " + "document.createElement('"+node.tagName.toUpperCase()+"');";
-    
+          
         //Parsing and transfering arguments
         for(var i = 0; i < node.attributes.length; i++)
         {
